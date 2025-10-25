@@ -291,9 +291,15 @@ Update `incremental_reid_loaders.py` and associated configuration if you add dat
 - Vision transformer backbones are a natural extension for richer patch dependencies.
 
 ---
+## 📄 Project Documents
+
+- [📘 Final Report (PDF)](docs/Final_Report.pdf)
+- [📊 Presentation Slides (PPTX)](docs/Project_Presentation.pptx)
+
+---
 
 ## Contact
-For questions or collaboration requests, please reach out to Aryan Tomar.
+For questions or collaboration requests, please reach out to aryntmr.18@gmail.com
 
 ---
 
