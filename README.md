@@ -1,5 +1,5 @@
 # Few-Shot Class-Incremental Learning for Face Recognition
-Author: Aryan Tomar (NYU / IIT Goa)  
+Author: Aryan Tomar (Indian Institute of Technology Goa)  
 Keywords: Continual Learning, Face Recognition, Few-Shot Learning, Knowledge Distillation, Patch-Based Learning, CosFace
 
 ---
