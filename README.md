@@ -50,14 +50,13 @@ The implementation combines patch-level knowledge distillation, relation-aware r
 The incremental schedule is purposefully aggressive. Each of the five source datasets is partitioned into T = 5 temporal slices, yielding 25 sequential learning steps. At every step the model observes 1,600 novel identities (balanced few-shot subsets with 4 images per identity), summing to 8,000 identities per dataset without replaying earlier samples. This regime enforces continual adaptation under large label-space expansions while keeping per-step memory footprint fixed. Paired with distributed data loading and stratified sampling, the pipeline delivers a robust benchmark for evaluating stability-plasticity trade-offs in FSCIL.
 
 ---
-
-### Results Summary
+## 🧪 Results Summary
 
 This section consolidates all **four experimental phases** conducted in the project, each addressing different limitations of few-shot class-incremental learning (FSCIL) in face recognition. The results emphasize the **learning–forgetting tradeoff**, showing how each modification improved long-term stability, generalization, and few-shot adaptability.
 
 ---
 
-### **Experiment 1 — Baseline: Vanilla Class-Incremental Learning (CIL)**
+### 🧩 **Experiment 1 — Baseline: Vanilla Class-Incremental Learning (CIL)**
 
 **Training Setting:**  
 The baseline Face Recognition model was trained using **Cross-Entropy (CE)** and **Triplet Loss** to learn class boundaries and embeddings, and optionally **Knowledge Distillation (KD)** (LwF) to retain past knowledge.  
@@ -68,7 +67,7 @@ Each dataset — UMDFace → ArcFace → VGGFace → RetinaFace → CASIAFace �
 \mathcal{L}_{total} = \mathcal{L}_{CE} + \mathcal{L}_{Triplet} + \lambda \mathcal{L}_{KD}
 \]
 
-#### Table 1 — *Without KD*
+#### 📊 Table 1 — *Without KD*
 | Dataset | UMDFace | ArcFace | VGGFace | RetinaFace | CasiaFace |
 |----------|----------|----------|-----------|-------------|-----------|
 | **UMDFace** | 60.8 |  |  |  |  |
@@ -77,7 +76,7 @@ Each dataset — UMDFace → ArcFace → VGGFace → RetinaFace → CASIAFace �
 | **RetinaFace** | 58.77 | 66.08 | 46.15 | 61.86 |  |
 | **CasiaFace** | 58.24 | 65.19 | 45.69 | 59.27 | 42.26 |
 
-#### Table 2 — *With KD (Vanilla CIL)*
+#### 📊 Table 2 — *With KD (Vanilla CIL)*
 | Dataset | UMDFace | ArcFace | VGGFace | RetinaFace | CasiaFace |
 |----------|----------|----------|-----------|-------------|-----------|
 | **UMDFace** | 60.8 |  |  |  |  |
@@ -86,13 +85,13 @@ Each dataset — UMDFace → ArcFace → VGGFace → RetinaFace → CASIAFace �
 | **RetinaFace** | 63.81 | 68.44 | 48.44 | 61.98 |  |
 | **CasiaFace** | 63.0 | 68.97 | 49.46 | 62.28 | 42.2 |
 
-**Observation:**  
+📈 **Observation:**  
 Knowledge Distillation improved memory retention slightly (+2–3%), but the model suffered from **error accumulation** due to **dataset-wise domain shifts**, leading to higher forgetting as tasks increased.  
 :contentReference[oaicite:0]{index=0}
 
 ---
 
-### **Experiment 2 — Patch-Based Distillation (Patch-KD)**
+### 🧩 **Experiment 2 — Patch-Based Distillation (Patch-KD)**
 
 **Motivation:**  
 The baseline relied heavily on the **relatedness of consecutive datasets**, causing performance to degrade when tasks were dissimilar.  
@@ -108,7 +107,7 @@ To make the model more **robust to domain shifts**, the training was restructure
 \mathcal{L}_{total} = \mathcal{L}_{CE} + \mathcal{L}_{Triplet} + \lambda_1 \mathcal{L}_{KD} + \lambda_2 \mathcal{L}_{PLD} + \lambda_3 \mathcal{L}_{PRD} + \mathcal{L}_{conf} + \mathcal{L}_{div}
 \]
 
-#### Table 1 — *Vanilla CIL (Modified Strategy)*
+#### 📊 Table 1 — *Vanilla CIL (Modified Strategy)*
 | Dataset | UMDFace | ArcFace | VGGFace | RetinaFace | CasiaFace |
 |----------|----------|----------|-----------|-------------|-----------|
 | **UMDFace** | 70.89 |  |  |  |  |
@@ -117,7 +116,7 @@ To make the model more **robust to domain shifts**, the training was restructure
 | **RetinaFace** | 66.23 | 74.79 | 58.13 | 72.14 |  |
 | **CasiaFace** | 65.58 | 73.27 | 55.36 | 68.47 | 58.72 |
 
-#### Table 2 — *Patch-Based Loss Function*
+#### 📊 Table 2 — *Patch-Based Loss Function*
 | Dataset | UMDFace | ArcFace | VGGFace | RetinaFace | CasiaFace |
 |----------|----------|----------|-----------|-------------|-----------|
 | **UMDFace** | 74.26 |  |  |  |  |
@@ -126,13 +125,13 @@ To make the model more **robust to domain shifts**, the training was restructure
 | **RetinaFace** | 74.02 | 81.54 | 63.09 | 74.95 |  |
 | **CasiaFace** | 73.99 | 81.28 | 62.01 | 75.01 | 55.80 |
 
-**Observation:**  
+📈 **Observation:**  
 Patch-level knowledge distillation **significantly improved robustness**, achieving up to **+10–12% increase in accuracy** across datasets and reducing cross-domain forgetting. The model now learned *where* to look, not just *what* to remember.  
 :contentReference[oaicite:1]{index=1}
 
 ---
 
-### **Experiment 3 — Ablation Studies (Patch Loss Components)**
+### 🧩 **Experiment 3 — Ablation Studies (Patch Loss Components)**
 
 **Goal:**  
 Assess the effect of removing each patch-based component (confidence, diversity, PLD, PRD) on the overall performance and forgetting behavior.
@@ -146,7 +145,7 @@ Assess the effect of removing each patch-based component (confidence, diversity,
 | **RetinaFace** | 73.08 | 80.56 | 62.58 | 74.63 |  |
 | **CasiaFace** | 72.92 | 80.08 | 61.56 | 74.20 | 55.30 |
 
-**Effect:**  
+🔍 **Effect:**  
 Without confidence and diversity regularization, the sampler fixated on redundant facial regions, reducing variety and robustness — increasing local forgetting.
 
 ---
@@ -160,7 +159,7 @@ Without confidence and diversity regularization, the sampler fixated on redundan
 | **RetinaFace** | 74.09 | 81.98 | 64.07 | 74.92 |  |
 | **CasiaFace** | 74.02 | 81.72 | 62.20 | 75.07 | 55.89 |
 
-**Effect & Motivation to Remove:**  
+🔍 **Effect & Motivation to Remove:**  
 Interestingly, removing PLD *increased* the final accuracy. Although forgetting slightly rose, **learning improved**, as the PLD loss often enforced distillation of **uninformative patches** (see slide visualization). Thus, PLD was removed in the final setup to prevent over-regularization and allow flexible learning of new facial regions.
 
 ---
@@ -174,16 +173,16 @@ Interestingly, removing PLD *increased* the final accuracy. Although forgetting 
 | **RetinaFace** | 73.98 | 81.02 | 62.85 | 73.82 |  |
 | **CasiaFace** | 73.68 | 81.01 | 61.77 | 74.63 | 55.13 |
 
-**Effect:**  
+🔍 **Effect:**  
 Removing PRD weakened relational structure between patches, increasing local forgetting. PRD was thus retained in the final model to stabilize structural consistency.
 
-**Summary:**  
+📈 **Summary:**  
 After ablation, the **Patch Classifier and PLD loss were removed**, as they hindered learning new distributions. The model retained PRD, confidence, and diversity losses — providing a balanced learning-forgetting tradeoff.  
 :contentReference[oaicite:2]{index=2}
 
 ---
 
-### **Experiment 4 — Final Model with Few-Shot Specific Loss (CosFace)**
+### 🧩 **Experiment 4 — Final Model with Few-Shot Specific Loss (CosFace)**
 
 **Motivation:**  
 To further minimize forgetting and tighten class boundaries, **CosFace (Angular Margin Loss)** was added. It enhances inter-class separability and intra-class compactness — effectively “compacting” learned features to make them resistant to drift.
@@ -193,7 +192,7 @@ To further minimize forgetting and tighten class boundaries, **CosFace (Angular 
 \mathcal{L}_{total} = \mathcal{L}_{CE} + \mathcal{L}_{Triplet} + \lambda_1 \mathcal{L}_{PRD} + \mathcal{L}_{conf} + \mathcal{L}_{div} + \mathcal{L}_{CosFace}
 \]
 
-#### Final Results — *T = 5, K = 4*
+#### 📊 Final Results — *T = 5, K = 4*
 | Dataset | UMDFace | ArcFace | VGGFace | RetinaFace | CasiaFace |
 |----------|----------|----------|-----------|-------------|-----------|
 | **UMDFace** | 74.56 |  |  |  |  |
@@ -202,14 +201,14 @@ To further minimize forgetting and tighten class boundaries, **CosFace (Angular 
 | **RetinaFace** | 74.41 | 82.26 | 64.96 | 76.01 |  |
 | **CasiaFace** | 74.21 | 81.84 | 62.71 | 75.52 | 57.02 |
 
-**Outcome:**  
+📈 **Outcome:**  
 This final configuration achieved the **least forgetting** while also maintaining the **highest absolute accuracy** across datasets.  
 The CosFace margin effectively compacted the class embeddings, reducing drift and delivering the best *learning–retention balance* of all experiments.  
 :contentReference[oaicite:3]{index=3}
 
 ---
 
-### **Overall Comparison — Learning vs Forgetting Tradeoff**
+### ⚖️ **Overall Comparison — Learning vs Forgetting Tradeoff**
 
 | Phase | Model / Loss Design | Average Accuracy (%) | Cumulative Forgetting ↓ (%) | Learning–Forgetting Behavior |
 |--------|----------------------|----------------------|------------------------------|-------------------------------|
@@ -218,7 +217,7 @@ The CosFace margin effectively compacted the class embeddings, reducing drift an
 | **3. Ablation (−PLD)** | CE + Triplet + PRD + Conf + Div | ~72.1 | **Medium (~5%)** | Forgetting slightly increases but learning ability improves — more adaptable model. |
 | **4. Final (CosFace)** | CE + Triplet + PRD + Conf + Div + CosFace | **~74.6** | **Lowest (~3–4%)** | Excellent compactness of features; best learning–retention equilibrium. |
 
-**Key Insight:**  
+💡 **Key Insight:**  
 Each experiment shifted the balance between **learning new identities** and **retaining past ones**.  
 - **Exp 1:** High learning, high forgetting (noisy incremental adaptation).  
 - **Exp 2:** Balanced learning with lower forgetting through localized distillation.  
