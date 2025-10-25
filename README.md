@@ -63,9 +63,9 @@ The baseline Face Recognition model was trained using **Cross-Entropy (CE)** and
 Each dataset — UMDFace → ArcFace → VGGFace → RetinaFace → CASIAFace — represented a single incremental step.
 
 **Vanilla CIL Loss:**
-\[
-\mathcal{L}_{total} = \mathcal{L}_{CE} + \mathcal{L}_{Triplet} + \lambda \mathcal{L}_{KD}
-\]
+`_L_total = L_CE + L_Triplet + λ₁ L_KD_`
+
+![Architecture](figs/image1.png)
 
 #### 📊 Table 1 — *Without KD*
 | Dataset | UMDFace | ArcFace | VGGFace | RetinaFace | CasiaFace |
@@ -87,7 +87,6 @@ Each dataset — UMDFace → ArcFace → VGGFace → RetinaFace → CASIAFace �
 
 📈 **Observation:**  
 Knowledge Distillation improved memory retention slightly (+2–3%), but the model suffered from **error accumulation** due to **dataset-wise domain shifts**, leading to higher forgetting as tasks increased.  
-:contentReference[oaicite:0]{index=0}
 
 ---
 
@@ -103,9 +102,9 @@ To make the model more **robust to domain shifts**, the training was restructure
 - Added **differentiable patch sampler**, **confidence**, **diversity**, **PLD**, and **PRD** losses.  
 
 **Patch-Based Loss Function:**
-\[
-\mathcal{L}_{total} = \mathcal{L}_{CE} + \mathcal{L}_{Triplet} + \lambda_1 \mathcal{L}_{KD} + \lambda_2 \mathcal{L}_{PLD} + \lambda_3 \mathcal{L}_{PRD} + \mathcal{L}_{conf} + \mathcal{L}_{div}
-\]
+`_L_total = L_CE + L_Triplet + λ₁ L_KD + λ₂ L_PLD + λ₃ L_PRD + L_conf + L_div_`
+
+![Architecture](figs/image50.png)
 
 #### 📊 Table 1 — *Vanilla CIL (Modified Strategy)*
 | Dataset | UMDFace | ArcFace | VGGFace | RetinaFace | CasiaFace |
@@ -127,7 +126,6 @@ To make the model more **robust to domain shifts**, the training was restructure
 
 📈 **Observation:**  
 Patch-level knowledge distillation **significantly improved robustness**, achieving up to **+10–12% increase in accuracy** across datasets and reducing cross-domain forgetting. The model now learned *where* to look, not just *what* to remember.  
-:contentReference[oaicite:1]{index=1}
 
 ---
 
@@ -178,7 +176,8 @@ Removing PRD weakened relational structure between patches, increasing local for
 
 📈 **Summary:**  
 After ablation, the **Patch Classifier and PLD loss were removed**, as they hindered learning new distributions. The model retained PRD, confidence, and diversity losses — providing a balanced learning-forgetting tradeoff.  
-:contentReference[oaicite:2]{index=2}
+
+![Architecture](figs/image82.png)
 
 ---
 
@@ -188,9 +187,10 @@ After ablation, the **Patch Classifier and PLD loss were removed**, as they hind
 To further minimize forgetting and tighten class boundaries, **CosFace (Angular Margin Loss)** was added. It enhances inter-class separability and intra-class compactness — effectively “compacting” learned features to make them resistant to drift.
 
 **Final Loss Function:**
-\[
-\mathcal{L}_{total} = \mathcal{L}_{CE} + \mathcal{L}_{Triplet} + \lambda_1 \mathcal{L}_{PRD} + \mathcal{L}_{conf} + \mathcal{L}_{div} + \mathcal{L}_{CosFace}
-\]
+`L_AP = -(1 / N) * Σ_{j=1}^{N} log( e^{s(cos(θ_j) - m)} / ( e^{s(cos(θ_j) - m)} + Σ_{i≠j} e^{s cos(θ_i)} ) )`
+`_L_total = L_CE + L_Triplet + λ₁ L_PRD + L_conf + L_div + L_AP`
+
+![Architecture](figs/image88.png)
 
 #### 📊 Final Results — *T = 5, K = 4*
 | Dataset | UMDFace | ArcFace | VGGFace | RetinaFace | CasiaFace |
@@ -204,7 +204,6 @@ To further minimize forgetting and tighten class boundaries, **CosFace (Angular 
 📈 **Outcome:**  
 This final configuration achieved the **least forgetting** while also maintaining the **highest absolute accuracy** across datasets.  
 The CosFace margin effectively compacted the class embeddings, reducing drift and delivering the best *learning–retention balance* of all experiments.  
-:contentReference[oaicite:3]{index=3}
 
 ---
 
@@ -212,10 +211,10 @@ The CosFace margin effectively compacted the class embeddings, reducing drift an
 
 | Phase | Model / Loss Design | Average Accuracy (%) | Cumulative Forgetting ↓ (%) | Learning–Forgetting Behavior |
 |--------|----------------------|----------------------|------------------------------|-------------------------------|
-| **1. Vanilla CIL** | CE + Triplet (+KD) | ~56.8 | **High (~9–10%)** | Strong initial learning, but severe forgetting under domain shift. |
-| **2. Patch-KD** | CE + Triplet + PLD + PRD + Conf + Div | ~70.9 | **Medium (~6%)** | Improved representation retention and stability under few-shot regime. |
-| **3. Ablation (−PLD)** | CE + Triplet + PRD + Conf + Div | ~72.1 | **Medium (~5%)** | Forgetting slightly increases but learning ability improves — more adaptable model. |
-| **4. Final (CosFace)** | CE + Triplet + PRD + Conf + Div + CosFace | **~74.6** | **Lowest (~3–4%)** | Excellent compactness of features; best learning–retention equilibrium. |
+| **1. Vanilla CIL** | _L_total = L_CE + L_Triplet + λ₁ L_KD_ | ~56.8 | **(~9–10%)** | Strong initial learning, but severe forgetting under domain shift. |
+| **2. Patch-KD** | _L_total = L_CE + L_Triplet + λ₁ L_KD + λ₂ L_PLD + λ₃ L_PRD + L_conf + L_div_ | ~70.9 | **(~6%)** | Improved representation retention and stability under few-shot regime. |
+| **3. Ablation (−PLD)** | _L_total = L_CE + L_Triplet + λ₃ L_PRD + L_conf + L_div_ | ~72.1 | **(~5%)** | Forgetting slightly increases but learning ability improves — more adaptable model. |
+| **4. Final (CosFace)** | _L_total = L_CE + L_Triplet + λ₁ L_PRD + L_conf + L_div + L_CosFace_ | **~74.6** | **(~3–4%)** | Excellent compactness of features; best learning–retention equilibrium. |
 
 💡 **Key Insight:**  
 Each experiment shifted the balance between **learning new identities** and **retaining past ones**.  
@@ -232,8 +231,8 @@ Each experiment shifted the balance between **learning new identities** and **re
 |-------------------|--------|
 | Confidence Loss | Patch sampler collapses on uninformative regions. |
 | Diversity Loss | Redundant patches reduce knowledge transfer. |
-| PLD | Loss of fine-grained semantic details. |
-| PRD | Increased structure-level forgetting. |
+| Patch Logit Distillation | Loss of fine-grained semantic details. |
+| Patch Relation Distillation | Increased structure-level forgetting. |
 | CosFace | Reduced separation in the embedding space. |
 
 Visualizations show that PRD preserves semantically stable patches (eyes, mouth), whereas PLD alone tends to distill regions that do not contribute to discrimination.
