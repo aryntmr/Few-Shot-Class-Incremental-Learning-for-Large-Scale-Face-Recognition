@@ -251,11 +251,12 @@ Visualizations show that PRD preserves semantically stable patches (eyes, mouth)
 
 ## Setup and Installation
 1. Clone the repository and move into the project directory.
-2. Create the conda environment (a sample name is `facekd_fscil.yaml`; the file will be provided separately):  
+2. Download the datasets from [link](https://github.com/deepinsight/insightface/tree/master/recognition/_datasets_)
+3. Create the conda environment (a sample name is `facekd_fscil.yaml`; the file will be provided separately):  
    `conda env create -f facekd_fscil.yaml`
-3. Activate the environment:  
+4. Activate the environment:  
    `conda activate facekd_fscil`
-4. Run the orchestration script to prepare data, train, or evaluate:  
+5. Run the orchestration script to prepare data, train, or evaluate:  
    `bash script.sh`
 
 `script.sh` centralizes common workflows (environment checks, distributed launch, logging). Adjust its flags to switch between training, evaluation, visualization, or dataset preparation once your environment file is available.
