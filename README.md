@@ -188,6 +188,9 @@ To further minimize forgetting and tighten class boundaries, **CosFace (Angular 
 
 **Final Loss Function:**
 `L_AP = -(1 / N) * Σ_{j=1}^{N} log( e^{s(cos(θ_j) - m)} / ( e^{s(cos(θ_j) - m)} + Σ_{i≠j} e^{s cos(θ_i)} ) )`
+
+![cosFace](figs/image97.png)
+
 `_L_total = L_CE + L_Triplet + λ₁ L_PRD + L_conf + L_div + L_AP`
 
 ![Architecture](figs/image88.png)
